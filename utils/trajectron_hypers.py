@@ -8,7 +8,8 @@ def get_traj_hypers():
     'minimum_history_length': 1,
     'maximum_history_length': 7,
     'map_encoder':
-        {'PEDESTRIAN':
+        {
+            'PEDESTRIAN':
             {'heading_state_index': 6,
              'patch_size': [50, 10, 50, 90],
              'map_channels': 3,
@@ -17,6 +18,16 @@ def get_traj_hypers():
              'masks': [5, 5, 5, 5],
              'strides': [1, 1, 1, 1],
              'dropout': 0.5
+            },
+        "VEHICLE": 
+            {"heading_state_index": 6,
+            "patch_size": [50, 10, 50, 90],
+            "map_channels": 3,
+            "hidden_channels": [10, 20, 10, 1],
+            "output_size": 32,
+            "masks": [5, 5, 5, 3],
+            "strides": [2, 2, 1, 1],
+            "dropout": 0.5
             }
         },
     'k': 1,
@@ -53,6 +64,16 @@ def get_traj_hypers():
             {'name': 'SingleIntegrator',
              'distribution': False,
              'limits': {}
+            },
+        "VEHICLE": 
+            {"name": "Unicycle",
+            "distribution": False,
+            "limits": {
+                "max_a": 4,
+                "min_a": -5,
+                "max_heading_change": 0.7,
+                "min_heading_change": -0.7
+                }
             }
         },
     'state':
@@ -60,9 +81,20 @@ def get_traj_hypers():
             {'position': ['x', 'y'],
              'velocity': ['x', 'y'],
              'acceleration': ['x', 'y']
+            },
+        "VEHICLE": 
+            {"position": ["x", "y"],
+            "velocity": ["x", "y"],
+            "acceleration": ["x", "y"],
+            "heading": ["°", "d°"]
             }
         },
-    'pred_state': {'PEDESTRIAN': {'velocity': ['x', 'y']}},
+    'pred_state': 
+        {
+            # 'PEDESTRIAN': {'velocity': ['x', 'y']},
+         'VEHICLE': {"position": ["x", "y"]}
+         },
+
     'log_histograms': False,
     'dynamic_edges': 'yes',
     'edge_state_combine_method': 'sum',

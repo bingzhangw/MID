@@ -43,7 +43,8 @@ class MID():
             if epoch % self.config.eval_every == 0:
                 self.model.eval()
 
-                node_type = "PEDESTRIAN"
+                # node_type = "PEDESTRIAN"
+                node_type = "VEHICLE"
                 eval_ade_batch_errors = []
                 eval_fde_batch_errors = []
 
@@ -117,7 +118,8 @@ class MID():
 
         self.log.info(f"Sampling: {sampling} Stride: {step}")
 
-        node_type = "PEDESTRIAN"
+        # node_type = "PEDESTRIAN"
+        node_type = "VEHICLE"
         eval_ade_batch_errors = []
         eval_fde_batch_errors = []
         ph = self.hyperparams['prediction_horizon']
@@ -214,7 +216,7 @@ class MID():
         self.log.info("\n")
 
         self.train_data_path = osp.join(self.config.data_dir,self.config.dataset + "_train.pkl")
-        self.eval_data_path = osp.join(self.config.data_dir,self.config.dataset + "_test.pkl")
+        self.eval_data_path = osp.join(self.config.data_dir,self.config.dataset + "_val.pkl")
         print("> Directory built!")
 
     def _build_optimizer(self):
@@ -238,15 +240,16 @@ class MID():
         if self.config.eval_mode:
             epoch = self.config.eval_at
             checkpoint_dir = osp.join(self.model_dir, f"{self.config.dataset}_epoch{epoch}.pt")
-            self.checkpoint = torch.load(osp.join(self.model_dir, f"{self.config.dataset}_epoch{epoch}.pt"), map_location = "cpu")
+            self.checkpoint = torch.load(osp.join(self.model_dir, f"{self.config.dataset}_epoch{epoch}.pt"), map_location = "cpu", weights_only=False)
 
             self.registrar.load_models(self.checkpoint['encoder'])
 
 
         with open(self.train_data_path, 'rb') as f:
-            self.train_env = dill.load(f, encoding='latin1')
+            # self.train_env = pickle.load(f)
+            self.train_env = dill.load(f, encoding='latin1')  # encoding='latin1'
         with open(self.eval_data_path, 'rb') as f:
-            self.eval_env = dill.load(f, encoding='latin1')
+            self.eval_env = dill.load(f, encoding='latin1')  # encoding='latin1'
 
     def _build_encoder(self):
         self.encoder = Trajectron(self.registrar, self.hyperparams, "cuda")
@@ -292,6 +295,10 @@ class MID():
                                            return_robot=not self.config.incl_robot_node)
         self.train_data_loader = dict()
         for node_type_data_set in self.train_dataset:
+
+            if node_type_data_set.node_type == "PEDESTRIAN":
+                continue
+
             node_type_dataloader = utils.data.DataLoader(node_type_data_set,
                                                          collate_fn=collate,
                                                          pin_memory = True,
@@ -332,6 +339,10 @@ class MID():
                                               return_robot=not config.incl_robot_node)
             self.eval_data_loader = dict()
             for node_type_data_set in self.eval_dataset:
+
+                if node_type_data_set.node_type == "PEDESTRIAN":
+                    continue
+
                 node_type_dataloader = utils.data.DataLoader(node_type_data_set,
                                                              collate_fn=collate,
                                                              pin_memory=True,

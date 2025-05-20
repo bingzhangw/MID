@@ -1,8 +1,11 @@
 import torch
 import torch.nn as nn
-from model.dynamics import Dynamic
-from utils import block_diag
-from model.components import GMM2D
+from .dynamic import Dynamic
+# from utils import block_diag
+from scipy.linalg import block_diag
+
+from ..components import GMM2D
+
 
 
 class Unicycle(Dynamic):
@@ -63,6 +66,8 @@ class Unicycle(Dynamic):
         p_0 = self.initial_conditions['pos'].unsqueeze(1)
         v_0 = self.initial_conditions['vel'].unsqueeze(1)
         phi_0 = torch.atan2(v_0[..., 1], v_0[..., 0])
+
+        out = self.p0_model(torch.cat((x, phi_0), dim=-1))
 
         phi_0 = phi_0 + torch.tanh(self.p0_model(torch.cat((x, phi_0), dim=-1)))
 

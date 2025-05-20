@@ -5,6 +5,8 @@ from collections import defaultdict
 import warnings
 from .node import Node
 
+np.float = float
+
 
 class Edge(object):
     def __init__(self, curr_node, other_node):
