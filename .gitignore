@@ -1,4 +1,5 @@
 /processed_data_noise/
+/experiments/baseline_eth/
 
 __pycache__/
 *.pyc
