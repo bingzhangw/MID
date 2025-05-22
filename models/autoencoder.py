@@ -49,5 +49,5 @@ class AutoEncoder(Module):
          map) = batch
 
         feat_x_encoded = self.encode(batch,node_type) # B * 64
-        loss = self.diffusion.get_loss(y_t.cuda(), feat_x_encoded)
+        loss = self.diffusion.get_loss(y_st_t.cuda(), feat_x_encoded)
         return loss

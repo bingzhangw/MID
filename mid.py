@@ -58,14 +58,14 @@ class MID():
                         timesteps = np.arange(t,t+10)
                         batch = get_timesteps_data(env=self.eval_env, scene=scene, t=timesteps, node_type=node_type, state=self.hyperparams['state'],
                                        pred_state=self.hyperparams['pred_state'], edge_types=self.eval_env.get_edge_types(),
-                                       min_ht=7, max_ht=self.hyperparams['maximum_history_length'], min_ft=12,
-                                       max_ft=12, hyperparams=self.hyperparams)
+                                       min_ht=7, max_ht=self.hyperparams['maximum_history_length'], min_ft=6,
+                                       max_ft=6, hyperparams=self.hyperparams)
                         if batch is None:
                             continue
                         test_batch = batch[0]
                         nodes = batch[1]
                         timesteps_o = batch[2]
-                        traj_pred = self.model.generate(test_batch, node_type, num_points=12, sample=20,bestof=True) # B * 20 * 12 * 2
+                        traj_pred = self.model.generate(test_batch, node_type, num_points=6, sample=20,bestof=True) # B * 20 * 6 * 2
 
                         predictions = traj_pred
                         predictions_dict = {}
@@ -132,14 +132,14 @@ class MID():
                 timesteps = np.arange(t,t+10)
                 batch = get_timesteps_data(env=self.eval_env, scene=scene, t=timesteps, node_type=node_type, state=self.hyperparams['state'],
                                pred_state=self.hyperparams['pred_state'], edge_types=self.eval_env.get_edge_types(),
-                               min_ht=7, max_ht=self.hyperparams['maximum_history_length'], min_ft=12,
-                               max_ft=12, hyperparams=self.hyperparams)
+                               min_ht=7, max_ht=self.hyperparams['maximum_history_length'], min_ft=6,
+                               max_ft=6, hyperparams=self.hyperparams)
                 if batch is None:
                     continue
                 test_batch = batch[0]
                 nodes = batch[1]
                 timesteps_o = batch[2]
-                traj_pred = self.model.generate(test_batch, node_type, num_points=12, sample=20,bestof=True, sampling=sampling, step=step) # B * 20 * 12 * 2
+                traj_pred = self.model.generate(test_batch, node_type, num_points=6, sample=20,bestof=True, sampling=sampling, step=step) # B * 20 * 6 * 2
 
                 predictions = traj_pred
                 predictions_dict = {}
