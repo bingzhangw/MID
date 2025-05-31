@@ -92,7 +92,7 @@ def get_traj_hypers():
     'pred_state': 
         {
             'PEDESTRIAN': {'velocity': ['x', 'y']},
-         'VEHICLE': {"position": ["x", "y"]}
+            'VEHICLE': {'velocity': ['x', 'y']}
          },
 
     'log_histograms': False,

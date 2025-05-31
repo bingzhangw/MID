@@ -41,7 +41,7 @@ def main():
     #
     # pprint(keys)
 
-    sampling = "ddim"
+    sampling = "ddpm"
     steps = 5
 
     if config["eval_mode"]:

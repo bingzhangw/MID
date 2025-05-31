@@ -240,7 +240,7 @@ class MID():
         if self.config.eval_mode:
             epoch = self.config.eval_at
             checkpoint_dir = osp.join(self.model_dir, f"{self.config.dataset}_epoch{epoch}.pt")
-            self.checkpoint = torch.load(osp.join(self.model_dir, f"{self.config.dataset}_epoch{epoch}.pt"), map_location = "cpu", weights_only=False)
+            self.checkpoint = torch.load(osp.join(self.model_dir, f"{self.config.dataset}_epoch{epoch}.pt"), map_location = "cpu")
 
             self.registrar.load_models(self.checkpoint['encoder'])
 

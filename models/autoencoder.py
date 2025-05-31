@@ -35,8 +35,29 @@ class AutoEncoder(Module):
         encoded_x = self.encoder.get_latent(batch, node_type)
         predicted_y_vel =  self.diffusion.sample(num_points, encoded_x,sample,bestof, flexibility=flexibility, ret_traj=ret_traj, sampling=sampling, step=step)
         
-        # predicted_y_pos = dynamics.integrate_samples(predicted_y_vel)  # NodeType: PEDESTRIAN
-        predicted_y_pos = dynamics.integrate_samples(predicted_y_vel, encoded_x)  # NodeType: VEHICLE
+        # NodeType: PEDESTRIAN
+        # predicted_y_pos = dynamics.integrate_samples(predicted_y_vel)  
+
+        # NodeType: VEHICLE
+        # Assume velocity (v_x, v_y) has shape [batch_size, horizon, 2]
+        v_x, v_y = predicted_y_vel[..., 0], predicted_y_vel[..., 1]
+
+        speed = torch.sqrt(v_x**2 + v_y**2)          # Linear speed
+        angle = torch.atan2(v_y, v_x)                # Heading angle
+
+        dt = 0.5  
+
+        dphi = (angle[..., 1:] - angle[..., :-1]) / dt
+        a = (speed[..., 1:] - speed[..., :-1]) / dt
+
+        # Pad the first timestep to keep shapes consistent
+        dphi = torch.cat([dphi[..., :1], dphi], dim=-1)
+        a = torch.cat([a[..., :1], a], dim=-1)
+
+        controls = torch.stack([dphi, a], dim=-1)  # [batch_size, num_samples, horizon, 2]
+
+        predicted_y_pos = dynamics.integrate_samples(controls)  
+
 
         return predicted_y_pos.cpu().detach().numpy()
 
@@ -49,5 +70,5 @@ class AutoEncoder(Module):
          map) = batch
 
         feat_x_encoded = self.encode(batch,node_type) # B * 64
-        loss = self.diffusion.get_loss(y_st_t.cuda(), feat_x_encoded)
+        loss = self.diffusion.get_loss(y_t.cuda(), feat_x_encoded)
         return loss

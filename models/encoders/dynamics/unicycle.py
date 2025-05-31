@@ -67,9 +67,16 @@ class Unicycle(Dynamic):
         v_0 = self.initial_conditions['vel'].unsqueeze(1)
         phi_0 = torch.atan2(v_0[..., 1], v_0[..., 0])
 
+        """
+        Sent to CUDA
+        """
+        """
+        self.p0_model = self.p0_model.cuda()
+
         out = self.p0_model(torch.cat((x, phi_0), dim=-1))
 
         phi_0 = phi_0 + torch.tanh(self.p0_model(torch.cat((x, phi_0), dim=-1)))
+        """
 
         u = torch.stack([control_samples[..., 0], control_samples[..., 1]], dim=0)
         x = torch.stack([p_0[..., 0], p_0[..., 1], phi_0, torch.norm(v_0, dim=-1)], dim = 0).squeeze(dim=-1)
